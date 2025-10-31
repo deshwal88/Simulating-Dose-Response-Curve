@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dose-Response Curve Simulator (4PL)</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 20px; }
+      label { display:block; margin-top:8px; }
+      .row { display:flex; gap: 20px; }
+      .col { flex: 1; }
+      .controls { margin-bottom: 12px; }
+      .error { color: red; }
+    </style>
+  </head>
+  <body>
+    <h2>Dose-Response Curve Simulator (4PL)</h2>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    <form method="post">
+      <div class="row controls">
+        <div class="col">
+          <label>A (lower) min <input name="A_min" type="number" step="0.1" value="{{ params.A_min }}"></label>
+          <label>A (lower) max <input name="A_max" type="number" step="0.1" value="{{ params.A_max }}"></label>
+        </div>
+        <div class="col">
+          <label>B (slope) min <input name="B_min" type="number" step="0.1" value="{{ params.B_min }}"></label>
+          <label>B (slope) max <input name="B_max" type="number" step="0.1" value="{{ params.B_max }}"></label>
+        </div>
+        <div class="col">
+          <label>C (EC50) min <input name="C_min" type="number" step="0.1" value="{{ params.C_min }}"></label>
+          <label>C (EC50) max <input name="C_max" type="number" step="0.1" value="{{ params.C_max }}"></label>
+        </div>
+        <div class="col">
+          <label>D (upper) min <input name="D_min" type="number" step="0.1" value="{{ params.D_min }}"></label>
+          <label>D (upper) max <input name="D_max" type="number" step="0.1" value="{{ params.D_max }}"></label>
+        </div>
+      </div>
+
+      <div class="row controls">
+        <div class="col">
+          <label>Top concentration <input name="top_conc" type="number" step="0.1" value="{{ params.top_conc }}"></label>
+        </div>
+        <div class="col">
+          <label>Even dilution factor <input name="dil_factor" type="number" step="0.1" value="{{ params.dil_factor }}"></label>
+        </div>
+        <div class="col">
+          <label>Scheme mode
+            <select name="scheme_mode">
+              <option value="even" {% if params.scheme_mode=='even' %}selected{% endif %}>Even</option>
+              <option value="custom" {% if params.scheme_mode=='custom' %}selected{% endif %}>Custom</option>
+            </select>
+          </label>
+          <label>Custom 7 dilution factors (comma-separated) <input name="custom_factors" type="text" value="{{ params.custom_factors }}" style="width:260px"></label>
+        </div>
+      </div>
+
+      <button type="submit">Update</button>
+    </form>
+
+    <hr>
+    <div>
+      <h3>Main dose-response curves</h3>
+      <div>{{ main_plot | safe }}</div>
+    </div>
+
+    <h3>Edge-case grid</h3>
+    <div>{{ edge_plot | safe }}</div>
+
+    <p style="font-size:0.9em">{{ notes }}</p>
+  </body>
+</html>

@@ -93,3 +93,4 @@ if __name__ == "__main__":
     print(calculate_even_dilution(top, 5))
     print(calculate_custom_dilution(100, [3,3,2,2,2,3,3]))
     print(compute_4pl(0.5, 1.5, 5.0, 3.5, [0.1,1,10]))
+

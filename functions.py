@@ -85,6 +85,67 @@ def edge_case_parameter_sets(A_range: Tuple[float, float], B_range: Tuple[float,
                     combos.append((a_choice, b_choice, c_choice, d_choice))
     return combos
 
+def _classify_concentration(x: float, C: float) -> str:
+    """
+    Classify a concentration x relative to EC50 (C) for 4PL:
+    Regions:
+      - lower asymptote: x < 0.01*C
+      - linear region:   0.2*C <= x <= 5*C
+      - upper asymptote: x > 100*C
+      - middle: ignored
+    """
+    ratio = x / C
+
+    if ratio < 0.01:
+        return "lower"
+    elif 0.2 <= ratio <= 5:
+        return "linear"
+    elif ratio > 100:
+        return "upper"
+    else:
+        return "middle"
+    
+def _evaluate_dilution_scheme(concentrations, C: float):
+    """
+    Count points in each important region for Task 4 requirements.
+    Returns:
+      (linear_count, lower_count, upper_count)
+    """
+    linear = lower = upper = 0
+
+    for x in concentrations:
+        region = _classify_concentration(x, C)
+        if region == "linear":
+            linear += 1
+        elif region == "lower":
+            lower += 1
+        elif region == "upper":
+            upper += 1
+
+    return linear, lower, upper
+
+def recommend_even_dilution_factors(top_concentration: float, C: float, factors_list=(2, 3, 4, 5, 6, 8, 10), points: int = 8):
+    """
+    Recommend dilution factors (even schemes like 3-fold, 5-fold) that satisfy:
+
+       - >=3 points in linear region
+       - >=1 point in lower asymptote
+       - >=1 point in upper asymptote
+
+    Returns list of tuples:
+        (dilution_factor, concentration_series)
+    """
+    recommendations = []
+
+    for f in factors_list:
+        series = calculate_even_dilution(top_concentration, f, points)
+        linear, lower, upper = _evaluate_dilution_scheme(series, C)
+
+        if linear >= 3 and lower >= 1 and upper >= 1:
+            recommendations.append((f, series))
+
+    return recommendations
+
 
 if __name__ == "__main__":
     # quick smoke test

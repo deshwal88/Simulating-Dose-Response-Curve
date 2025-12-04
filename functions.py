@@ -148,4 +148,10 @@ def recommend_even_dilution_factors(top_concentration: float, C: float, factors_
 
 
 if __name__ == "__main__":
-    print("This module provides the compute_response_curve function for import.")
+    # quick smoke test
+    print("functions.py: quick smoke test")
+    top = 100
+    print(calculate_even_dilution(top, 5))
+    print(calculate_custom_dilution(100, [3,3,2,2,2,3,3]))
+    print(compute_4pl(0.5, 1.5, 5.0, 3.5, [0.1,1,10]))
+

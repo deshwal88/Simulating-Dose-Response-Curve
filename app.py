@@ -239,6 +239,13 @@ def index():
     edge_html = pio.to_html(edge_fig, full_html=False, include_plotlyjs=False)
 
     notes = f"Dilution points (first->last): {', '.join([f'{v:.6g}' for v in dilution_points])}"
+    # recommended even dilution factors based on top concentration and midpoint C
+    try:
+        recommendations = functions.recommend_even_dilution_factors(
+            params["top_conc"], C_mid, points=8
+        )
+    except Exception:
+        recommendations = []
     return render_template(
         "index.html",
         main_plot=main_html,
@@ -246,6 +253,7 @@ def index():
         params=params,
         notes=notes,
         error=error,
+        recommendations=recommendations,
     )
 
 

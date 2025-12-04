@@ -11,6 +11,13 @@
       .col { flex: 1; }
       .controls { margin-bottom: 12px; }
       .error { color: red; }
+      /* make disabled inputs more noticeable */
+      input:disabled, textarea:disabled {
+        background-color: #fff3b0; /* pale yellow */
+        color: #333;
+        border: 1px solid #e6c200; /* darker yellow border */
+        opacity: 1; /* avoid default faded look */
+      }
     </style>
   </head>
   <body>
@@ -38,24 +45,76 @@
 
       <div class="row controls">
         <div class="col">
-          <label>Top concentration <input name="top_conc" type="number" step="0.1" value="{{ params.top_conc }}"></label>
-        </div>
-        <div class="col">
-          <label>Even dilution factor <input name="dil_factor" type="number" step="0.1" value="{{ params.dil_factor }}"></label>
-        </div>
-        <div class="col">
-          <label>Scheme mode
-            <select name="scheme_mode">
-              <option value="even" {% if params.scheme_mode=='even' %}selected{% endif %}>Even</option>
-              <option value="custom" {% if params.scheme_mode=='custom' %}selected{% endif %}>Custom</option>
-            </select>
-          </label>
-          <label>Custom 7 dilution factors (comma-separated) <input name="custom_factors" type="text" value="{{ params.custom_factors }}" style="width:260px"></label>
+          <fieldset style="padding:10px; border:1px solid #ccc;">
+            <legend style="font-weight:600;">Dilution Settings</legend>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <div style="min-width:200px;">
+                <label>Top concentration <input name="top_conc" type="number" step="0.1" value="{{ params.top_conc }}"></label>
+              </div>
+              <div style="min-width:160px;">
+                <label>Even dilution factor <input name="dil_factor" type="number" step="0.1" value="{{ params.dil_factor }}"></label>
+              </div>
+              <div style="min-width:260px;">
+                <label>Recommended dilution factors
+                  <select id="recommended_dil" name="recommended_dil">
+                    <option value="">-- choose --</option>
+                    {% for f, series in recommendations %}
+                      <option value="{{ f }}" data-series="{{ series|join(',') }}">{{ f }}-fold ({{ series|join(', ') }})</option>
+                    {% endfor %}
+                  </select>
+                </label>
+              </div>
+              </div>
+              <br>
+              <div style="min-width:500px; display: justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <label>Scheme mode
+                  <select id="scheme_mode_select" name="scheme_mode">
+                    <option value="even" {% if params.scheme_mode=='even' %}selected{% endif %}>Even</option>
+                    <option value="custom" {% if params.scheme_mode=='custom' %}selected{% endif %}>Custom</option>
+                  </select>
+                </label>
+                <label>Custom 7 dilution factors (comma-separated)
+                  <input id="custom_factors_input" name="custom_factors" type="text" value="{{ params.custom_factors }}" style="width:260px" {% if params.scheme_mode=='even' %}disabled{% endif %}>
+                </label>
+              </div>
+            </div>
+          </fieldset>
         </div>
       </div>
 
       <button type="submit">Update</button>
     </form>
+
+    <script>
+      // when a recommendation is chosen, copy the factor to the dil_factor input
+      (function(){
+        var sel = document.getElementById('recommended_dil');
+        if(!sel) return;
+        sel.addEventListener('change', function(){
+          var v = this.value;
+          if(v !== ''){
+            var inp = document.querySelector('input[name="dil_factor"]');
+            if(inp) inp.value = v;
+          }
+        });
+      })();
+      // enable/disable custom factors input based on scheme mode selection
+      (function(){
+        var scheme = document.getElementById('scheme_mode_select');
+        var customInp = document.getElementById('custom_factors_input');
+        if(!scheme || !customInp) return;
+        function update(){
+          if(scheme.value === 'even'){
+            customInp.disabled = true;
+          } else {
+            customInp.disabled = false;
+          }
+        }
+        scheme.addEventListener('change', update);
+        // initial state
+        update();
+      })();
+    </script>
 
     <hr>
     <div>

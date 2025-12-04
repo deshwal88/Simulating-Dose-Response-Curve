@@ -96,11 +96,11 @@ def _classify_concentration(x: float, C: float) -> str:
     """
     ratio = x / C
 
-    if ratio < 0.01:
+    if ratio <= 0.1:
         return "lower"
-    elif 0.2 <= ratio <= 5:
+    elif 0.3 <= ratio <= 3:
         return "linear"
-    elif ratio > 100:
+    elif ratio > 10:
         return "upper"
     else:
         return "middle"

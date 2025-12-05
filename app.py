@@ -242,8 +242,8 @@ def index():
     # recommended even dilution factors based on top concentration and midpoint C
     try:
         recommendations = functions.recommend_even_dilution_factors(
-            params["top_conc"], C_mid, points=8
-        )
+    params["top_conc"], params["C_min"], params["C_max"], points=8
+)
     except Exception:
         recommendations = []
     return render_template(

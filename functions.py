@@ -144,7 +144,7 @@ def recommend_even_dilution_factors(top_concentration: float, C: float, factors_
         if linear >= 3 and lower >= 1 and upper >= 1:
             recommendations.append((f, series))
 
-    return recommendations
+    return [(round(f, 2), [round(c, 2) for c in series]) for f, series in recommendations]
 
 
 if __name__ == "__main__":

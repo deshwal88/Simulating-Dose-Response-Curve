@@ -19,8 +19,6 @@ def main():
     res_100 = functions.compute_4pl(0.5, 1.5, 5, 3.5, c_100)
     res_160 = functions.compute_4pl(0.5, 1.5, 8, 3.5, c_160)
 
-    #functions.generate_main_graph([c_40, c_100, c_160], [res_40, res_100, res_160])
-
     EC50_ref = 5
     reco = functions.recommend_even_dilution_factors(top_concentration, EC50_ref)
     print("Recommended dilution schemes:")
